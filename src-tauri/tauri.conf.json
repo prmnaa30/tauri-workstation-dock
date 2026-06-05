@@ -10,11 +10,26 @@
     "frontendDist": "../dist"
   },
   "app": {
-    "windows": [
+        "windows": [
       {
-        "title": "workstation-dock",
-        "width": 800,
-        "height": 600
+        "label": "main",
+        "title": "Workstation Dock",
+        "width": 1280,
+        "height": 960,
+        "visible": false,
+        "center": true
+      },
+      {
+        "label": "floating",
+        "title": "Command Bar",
+        "width": 650,
+        "height": 100,
+        "decorations": false,
+        "transparent": true,
+        "visible": false,
+        "alwaysOnTop": true,
+        "center": true,
+        "skipTaskbar": true
       }
     ],
     "security": {
