@@ -15,7 +15,7 @@
         "label": "main",
         "title": "Workstation Dock",
         "width": 1280,
-        "height": 960,
+        "height": 760,
         "visible": false,
         "center": true
       },
