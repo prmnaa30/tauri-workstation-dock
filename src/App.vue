@@ -6,6 +6,7 @@
       @create="handleCreate"
       @delete="handleDelete" 
       @select="handleSelect"
+      @toggle-favorite="handleToggleFavorite"
     />
 
     <WorkspaceDetails :workspace="activeWorkspace" @update="handleUpdate" />
@@ -14,8 +15,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { getWorkspaces, addWorkspace, deleteWorkspace, updateWorkspace } from './services/db';
-import type { Workspace } from './services/db';
+import { getWorkspaces, addWorkspace, deleteWorkspace, updateWorkspace, toggleFavorite } from './services/workspaces.ts';
+import type { Workspace } from './services/workspaces.ts';
 
 import Sidebar from './components/Sidebar.vue';
 import WorkspaceDetails from './components/WorkspaceDetails.vue';
@@ -56,6 +57,12 @@ async function handleUpdate(id: number, payload: { name: string, description: st
   if (updated) {
     activeWorkspace.value = updated;
   }
+}
+
+async function handleToggleFavorite(workspace: Workspace) {
+  const newStatus = workspace.is_favorite === 1 ? false : true;
+  await toggleFavorite(workspace.id, newStatus);
+  await fetchWorkspaces();
 }
 
 function handleSelect(workspace: Workspace) {

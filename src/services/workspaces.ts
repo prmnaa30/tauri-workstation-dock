@@ -5,6 +5,7 @@ export interface Workspace {
   name: string;
   description: string;
   created_at: string;
+  is_favorite: number;
 }
 
 export async function getWorkspaces(): Promise<Workspace[]> {
@@ -31,4 +32,12 @@ export async function updateWorkspace(id: number, name: string, description: str
 export async function deleteWorkspace(id: number): Promise<void> {
   const db = await dbPromise;
   await db.execute("DELETE FROM workspaces WHERE id = $1", [id]);
+}
+
+export async function toggleFavorite(id: number, isFavorite: boolean) {
+  const db = await dbPromise;
+  await db.execute(
+    "UPDATE workspaces SET is_favorite = $1 WHERE id = $2",
+    [isFavorite ? 1 : 0, id]
+  )
 }

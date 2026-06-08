@@ -1,8 +1,44 @@
+use tauri_plugin_opener::OpenerExt;
 use tauri::Manager;
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::TrayIconBuilder;
 use tauri_plugin_sql::{Migration, MigrationKind};
 use std::fs;
+
+#[tauri::command]
+async fn execute_shortcut(app: tauri::AppHandle, path: String, shortcut_type: String, browser: Option<String>) -> Result<(), String> {
+    match shortcut_type.as_str() {
+        "web" => {
+            if let Some(browser_exe) = browser {
+                #[cfg(target_os = "windows")]
+                if !browser_exe.trim().is_empty() {
+                    let _ = std::process::Command::new("cmd")
+                        .args(["/c", "start", "", &browser_exe, &path])
+                        .spawn()
+                        .map_err(|e| format!("Failed to open browser: {}", e))?;
+                    return Ok(());
+                }
+
+                #[cfg(not(target_os = "windows"))]
+                let _ = std::process::Command::new(&browser_exe)
+                        .arg(&path)
+                        .spawn()
+                        .map_err(|e| format!("Failed to open browser: {}", e))?;
+                    return Ok(());
+            }
+
+            app.opener().open_url(&path, None::<&str>).map_err(|e| e.to_string())?;
+        }
+
+        "folder" | "file" => {
+            app.opener().open_path(&path, None::<&str>).map_err(|e| e.to_string())?;
+        }
+
+        _ => return Err("Tipe shortcut tidak dikenali".to_string()),
+    }
+
+    Ok(())
+}
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -17,6 +53,12 @@ pub fn run() {
             version: 1,
             description: "init_schema",
             sql: include_str!("../migrations/01_init-schema.sql"),
+            kind: MigrationKind::Up
+        },
+        Migration {
+            version: 2,
+            description: "add_favorites",
+            sql: include_str!("../migrations/02_add_favorites.sql"),
             kind: MigrationKind::Up
         }
     ];
@@ -68,7 +110,7 @@ pub fn run() {
                 api.prevent_close();
             }
         })
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![greet, execute_shortcut])
         .run(tauri::generate_context!())
         .expect("error while running tauri application")
 }

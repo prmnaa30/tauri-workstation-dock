@@ -1,0 +1,37 @@
+import { dbPromise } from "./db";
+
+export interface Shortcut {
+	id: number;
+	workspace_id: number;
+	title: string;
+	type: "web" | "folder" | "file";
+	path: string;
+	browser_path: string | null;
+}
+
+export async function getShortcuts(workspadeId: number): Promise<Shortcut[]> {
+	const db = await dbPromise;
+	return await db.select(
+		"SELECT * FROM shortcuts WHERE workspace_id = $1 ORDER BY id ASC",
+		[workspadeId],
+	);
+}
+
+export async function addShortcut(
+	workspaceId: number,
+	title: string,
+	type: string,
+	path: string,
+	browserPath: string | null = null,
+): Promise<void> {
+	const db = await dbPromise;
+	await db.execute(
+		"INSERT INTO shortcuts (workspace_id, title, type, path, browser_path) VALUES ($1, $2, $3, $4, $5)",
+		[workspaceId, title, type, path, browserPath],
+	);
+}
+
+export async function deleteShortcut(id: number): Promise<void> {
+	const db = await dbPromise;
+	await db.execute("DELETE FROM shortcuts WHERE id = $1", [id]);
+}
