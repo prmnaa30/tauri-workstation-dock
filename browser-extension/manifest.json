@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Workstation Dock Connector",
+  "version": "1.0",
+  "description": "Menghubungkan tab browser dengan aplikasi desktop Tauri Workstation Dock.",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "tabs"
+  ]
+}

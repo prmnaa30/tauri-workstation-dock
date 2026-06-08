@@ -16,7 +16,7 @@
           title="Click to edit name">
           {{ workspace.name }}
         </h2>
-        
+
         <div v-if="isEditingDesc" class="mt-2">
           <input ref="descInputRef" v-model="editedDesc" @blur="saveChanges" @keyup.enter="saveChanges"
             class="text-slate-400 bg-slate-900/50 border-b-2 border-blue-500 focus:outline-none w-full px-2 py-1 rounded-t-md"
@@ -57,13 +57,16 @@
               </select>
             </div>
 
-            <input v-model="newShortcut.path" type="text"
-              placeholder="Target Path (e.g., https://figma.com/file/... atau C:\Projects)" required
-              class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none text-slate-200 font-mono">
+            <div class="flex gap-2">
+              <input v-model="newShortcut.path" type="text"
+                placeholder="Target Path (e.g., https://figma.com/file/... atau C:\Projects)" required
+                class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none text-slate-200 font-mono">
 
-            <input v-if="newShortcut.type === 'web'" v-model="newShortcut.browser_path" type="text"
-              placeholder="Optional: Custom Browser Exe (e.g., brave, msedge, chrome)"
-              class="w-full bg-slate-950/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none text-slate-400 font-mono">
+              <button v-if="newShortcut.type !== 'web'" type="button" @click="browsePath"
+                class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 text-sm transition-colors whitespace-nowrap">
+                🔍 Browse
+              </button>
+            </div>
 
             <button type="submit"
               class="self-end px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg shadow-lg shadow-blue-500/20 transition-all">Save
@@ -120,6 +123,7 @@ import { ref, watch, nextTick } from 'vue';
 import type { Workspace } from '../services/workspaces';
 import { addShortcut, deleteShortcut, getShortcuts, Shortcut } from '../services/shortcuts';
 import { invoke } from '@tauri-apps/api/core';
+import { open } from '@tauri-apps/plugin-dialog';
 
 const props = defineProps<{
   workspace: Workspace | null;
@@ -230,6 +234,19 @@ async function executeShortcutAction(shortcut: Shortcut) {
     });
   } catch (error) {
     alert(`Oops! Failed to execute shortcut:\n${error}`)
+  }
+}
+
+async function browsePath() {
+  if (newShortcut.value.type === 'web') return
+
+  const selectedPath = await open({
+    directory: newShortcut.value.type === 'folder',
+    multiple: false
+  })
+
+  if (selectedPath) {
+    newShortcut.value.path = selectedPath as string;
   }
 }
 </script>
