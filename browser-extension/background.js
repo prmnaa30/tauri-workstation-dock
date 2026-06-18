@@ -1,4 +1,3 @@
-
 function handleOpenOrFocus(targetUrl) {
 	chrome.tabs.query({}, (tabs) => {
 		try {
@@ -8,7 +7,17 @@ function handleOpenOrFocus(targetUrl) {
 				if (!tab.url) return false;
 				try {
 					const currentTabUrl = new URL(tab.url);
-					return currentTabUrl.hostname === target.hostname;
+
+					if (currentTabUrl.origin !== target.origin) return false;
+
+					if (target.pathname === "/" || target.pathname === "") {
+						return true;
+					}
+
+					return (
+						currentTabUrl.pathname === target.pathname ||
+						currentTabUrl.pathname.startsWith(target.pathname + "/")
+					);
 				} catch (e) {
 					return false;
 				}
@@ -31,7 +40,7 @@ function handleOpenOrFocus(targetUrl) {
 }
 
 async function setupOffscreenDocument() {
-	const OFFSCREEN_PATH = 'offscreen.html';
+	const OFFSCREEN_PATH = "offscreen.html";
 
 	if (await chrome.offscreen.hasDocument()) {
 		return;
@@ -40,13 +49,13 @@ async function setupOffscreenDocument() {
 	try {
 		await chrome.offscreen.createDocument({
 			url: OFFSCREEN_PATH,
-			reasons: ['IFRAME_SCRIPTING'],
-			justification: 'Maintaining WebSocket connection to Workstation Dock App'
+			reasons: ["IFRAME_SCRIPTING"],
+			justification: "Maintaining WebSocket connection to Workstation Dock App",
 		});
 
-		console.log("Offscreen document created successfully.")
+		console.log("Offscreen document created successfully.");
 	} catch (error) {
-		console.error("Failed to create offscreen document: ", error)
+		console.error("Failed to create offscreen document: ", error);
 	}
 }
 
@@ -57,6 +66,6 @@ setupOffscreenDocument();
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	if (message.action === "open_or_focus" && message.url) {
-		handleOpenOrFocus(message.url)
+		handleOpenOrFocus(message.url);
 	}
-})
+});
