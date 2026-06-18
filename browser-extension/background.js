@@ -1,56 +1,3 @@
-// URL WebSocket ke aplikasi Tauri
-const WS_URL = "ws://127.0.0.1:48531";
-let socket = null;
-let reconnectInterval = null;
-
-// Fungsi untuk menghubungkan WebSocket
-function connectWebSocket() {
-	if (socket && socket.readyState === WebSocket.OPEN) return;
-
-	console.log("[Workstation Dock] Connecting to Tauri App...");
-	socket = new WebSocket(WS_URL);
-
-	socket.onopen = () => {
-		console.log("[Workstation Dock] Connected to Tauri!");
-		if (reconnectInterval) {
-			clearInterval(reconnectInterval);
-			reconnectInterval = null;
-		}
-	};
-
-	socket.onmessage = (event) => {
-		try {
-			const data = JSON.parse(event.data);
-			console.log("[Workstation Dock] Receiving messages:", data);
-
-			if (data.action === "open_or_focus" && data.url) {
-				handleOpenOrFocus(data.url);
-			}
-		} catch (e) {
-			console.error("Failed processing JSON:", e);
-		}
-	};
-
-	socket.onclose = () => {
-		console.log(
-			"[Workstation Dock] Connection lost. Trying in 3 seconds...",
-		);
-		socket = null;
-		scheduleReconnect();
-	};
-
-	socket.onerror = (err) => {
-		socket.close();
-	};
-}
-
-function scheduleReconnect() {
-	if (!reconnectInterval) {
-		reconnectInterval = setInterval(() => {
-			connectWebSocket();
-		}, 3000);
-	}
-}
 
 function handleOpenOrFocus(targetUrl) {
 	chrome.tabs.query({}, (tabs) => {
@@ -83,4 +30,33 @@ function handleOpenOrFocus(targetUrl) {
 	});
 }
 
-connectWebSocket();
+async function setupOffscreenDocument() {
+	const OFFSCREEN_PATH = 'offscreen.html';
+
+	if (await chrome.offscreen.hasDocument()) {
+		return;
+	}
+
+	try {
+		await chrome.offscreen.createDocument({
+			url: OFFSCREEN_PATH,
+			reasons: ['IFRAME_SCRIPTING'],
+			justification: 'Maintaining WebSocket connection to Workstation Dock App'
+		});
+
+		console.log("Offscreen document created successfully.")
+	} catch (error) {
+		console.error("Failed to create offscreen document: ", error)
+	}
+}
+
+chrome.runtime.onStartup.addListener(setupOffscreenDocument);
+chrome.runtime.onInstalled.addListener(setupOffscreenDocument);
+
+setupOffscreenDocument();
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	if (message.action === "open_or_focus" && message.url) {
+		handleOpenOrFocus(message.url)
+	}
+})
