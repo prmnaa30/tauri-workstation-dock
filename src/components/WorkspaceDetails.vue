@@ -25,17 +25,11 @@
         </p>
       </div>
 
-      <div class="relative">
-        <UTabs v-model="activeTab" :items="tabItems" variant="link" class="gap-4">
-          <template #shortcuts>
-            <Shortcuts :workspace="workspace" />
-          </template>
-        </UTabs>
-
-        <div class="absolute top-0 right-0 p-1">
-          <ShortcutFormModal :workspace="workspace" />
-        </div>
-      </div>
+      <UTabs v-model="activeTab" :items="tabItems" variant="link" class="relative gap-4">
+        <template #shortcuts>
+          <Shortcuts :workspace="workspace" />
+        </template>
+      </UTabs>
     </div>
 
     <div v-else class="relative z-10 flex flex-col items-center text-slate-500">

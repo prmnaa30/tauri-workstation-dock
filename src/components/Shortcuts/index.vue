@@ -1,14 +1,26 @@
 <template>
   <div class="flex-1 overflow-y-auto custom-scrollbar pr-2 flex flex-col gap-4">
+    <div class="absolute top-0 right-0 p-1 flex gap-1">
+      <SearchSortBar
+        v-model:search="searchQuery"
+        v-model:sort-key="sortKey"
+        v-model:sort-order="sortOrder"
+        :sort-options="sortOptions"
+      />
+
+      <ShortcutFormModal :workspace="workspace!" />
+    </div>
+
     <!-- Empty State -->
-    <div v-if="shortcuts && shortcuts.length === 0"
+    <div v-if="filteredAndSortedShortcuts.length === 0"
       class="flex-1 flex flex-col items-center justify-center border border-dashed border-slate-700/50 rounded-2xl bg-slate-800/10 min-h-[200px]">
-      <p class="text-slate-500">No shortcuts configured yet.</p>
+      <p class="text-slate-500">{{ searchQuery ? 'No shortcuts found.' : 'No shortcuts configured yet.' }}</p>
     </div>
 
     <!-- Shortcuts Grid -->
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div v-for="sc in shortcuts" :key="sc.id" @click="executeShortcutAction(sc)"
+
+      <div v-for="sc in filteredAndSortedShortcuts" :key="sc.id" @click="executeShortcutAction(sc)"
         class="group bg-slate-900/80 hover:bg-slate-900 border border-slate-800/80 hover:border-slate-700 rounded-xl overflow-hidden flex flex-col z-10 cursor-pointer transition-all shadow-md hover:shadow-lg duration-200">
 
         <div class="h-14 w-full relative transition-all duration-200" :class="{
@@ -72,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { Workspace } from '../../services/workspaces';
 import { Shortcut } from '../../services/shortcuts';
 import { invoke } from '@tauri-apps/api/core';
@@ -87,6 +99,48 @@ const store = useShortcutStore();
 const { shortcuts } = storeToRefs(store);
 const deleteModalRef = ref<any>(null);
 const shortcutToDelete = ref<Shortcut | null>(null);
+
+const searchQuery = ref('');
+const sortKey = ref('title');
+const sortOrder = ref<'asc' | 'desc'>('asc');
+
+const sortOptions = [
+  { label: 'Name', value: 'title' },
+  { label: 'Type', value: 'type' },
+  { label: 'Date Created', value: 'created_at' },
+  { label: 'Date Modified', value: 'updated_at' }
+];
+
+const filteredAndSortedShortcuts = computed(() => {
+  if (!shortcuts.value) return [];
+
+  let result = [...shortcuts.value];
+
+  // Searching
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    result = result.filter(shorcut => 
+      shorcut.title.toLowerCase().includes(query) ||
+      (shorcut.path && shorcut.path.toLowerCase().includes(query))
+    );
+  }
+
+  result.sort((a: any, b: any) => {
+    let valA = a[sortKey.value] || '';
+    let valB = b[sortKey.value] || '';
+
+    if (typeof valA === 'string' &&  typeof valB === 'string') {
+      valA = valA.toLowerCase();
+      valB = valB.toLowerCase();
+    }
+
+    if (valA < valB) return sortOrder.value === 'asc' ? -1 : 1;
+    if (valA > valB) return sortOrder.value === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  return result;
+})
 
 watch(() => props.workspace, async (newWs) => {
   if (newWs) {

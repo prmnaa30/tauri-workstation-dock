@@ -10,7 +10,7 @@
     >
 
     <slot>
-      <UButton label="Add" />
+      <UButton title="Add new" trailing-icon="i-lucide-plus" variant="ghost" />
     </slot>
 
     <template #body>
