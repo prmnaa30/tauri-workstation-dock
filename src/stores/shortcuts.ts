@@ -1,20 +1,20 @@
 import { defineStore } from "pinia";
 import {
-	addShortcut,
-	deleteShortcut,
-	editShortcut,
-	getShortcuts,
+	createShortcutService,
+	deleteShortcutService,
+	updateShortcutService,
+	getShortcutsService,
 	type Shortcut,
-} from "../services/shortcuts";
+} from "../services/shortcuts.service";
 import { ref } from "vue";
 
 export const useShortcutStore = defineStore("shortcut", () => {
 	const shortcuts = ref<Shortcut[]>([]);
 	const currentWorkspaceId = ref<number | null>(null);
 
-	async function fetchShortcuts(workspaceId: number) {
+	async function getShortcuts(workspaceId: number) {
 		currentWorkspaceId.value = workspaceId;
-		shortcuts.value = await getShortcuts(workspaceId);
+		shortcuts.value = await getShortcutsService(workspaceId);
 	}
 
 	async function createShortcut(
@@ -24,10 +24,10 @@ export const useShortcutStore = defineStore("shortcut", () => {
 		path: string,
 		browserPath: string | null,
 	) {
-		await addShortcut(workspaceId, title, type, path, browserPath);
+		await createShortcutService(workspaceId, title, type, path, browserPath);
 
 		if (currentWorkspaceId.value === workspaceId) {
-			await fetchShortcuts(workspaceId);
+			await getShortcuts(workspaceId);
 		}
 	}
 
@@ -39,27 +39,27 @@ export const useShortcutStore = defineStore("shortcut", () => {
 		path: string,
 		browserPath: string | null,
 	) {
-		await editShortcut(shortcutId, title, type, path, browserPath);
+		await updateShortcutService(shortcutId, title, type, path, browserPath);
 
 		if (currentWorkspaceId.value === workspaceId) {
-			await fetchShortcuts(workspaceId);
+			await getShortcuts(workspaceId);
 		}
 	}
 
-	async function removeShortcut(id: number) {
-		await deleteShortcut(id);
+	async function deleteShortcut(id: number) {
+		await deleteShortcutService(id);
 
 		if (currentWorkspaceId.value !== null) {
-			await fetchShortcuts(currentWorkspaceId.value);
+			await getShortcuts(currentWorkspaceId.value);
 		}
 	}
 
 	return {
 		shortcuts,
 		currentWorkspaceId,
-		fetchShortcuts,
+		getShortcuts,
 		createShortcut,
 		updateShortcut,
-		removeShortcut,
+		deleteShortcut,
 	};
 });

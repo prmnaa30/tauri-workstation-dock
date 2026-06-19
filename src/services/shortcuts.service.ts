@@ -9,7 +9,7 @@ export interface Shortcut {
 	browser_path: string | null;
 }
 
-export async function getShortcuts(workspadeId: number): Promise<Shortcut[]> {
+export async function getShortcutsService(workspadeId: number): Promise<Shortcut[]> {
 	const db = await dbPromise;
 	return await db.select(
 		"SELECT * FROM shortcuts WHERE workspace_id = $1 ORDER BY id ASC",
@@ -17,7 +17,7 @@ export async function getShortcuts(workspadeId: number): Promise<Shortcut[]> {
 	);
 }
 
-export async function addShortcut(
+export async function createShortcutService(
 	workspaceId: number,
 	title: string,
 	type: string,
@@ -31,7 +31,7 @@ export async function addShortcut(
 	);
 }
 
-export async function editShortcut(
+export async function updateShortcutService(
 	shortcutId: number,
 	title: string,
 	type: string,
@@ -45,7 +45,7 @@ export async function editShortcut(
 	);
 }
 
-export async function deleteShortcut(id: number): Promise<void> {
+export async function deleteShortcutService(id: number): Promise<void> {
 	const db = await dbPromise;
 	await db.execute("DELETE FROM shortcuts WHERE id = $1", [id]);
 }

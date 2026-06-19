@@ -2,43 +2,43 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import {
 	Workspace,
-	getWorkspaces,
-	deleteWorkspace,
-	addWorkspace,
-	updateWorkspace,
-	toggleFavorite,
-} from "../services/workspaces";
+	getWorkspacesService,
+	deleteWorkspaceService,
+	createWorkspaceService,
+	updateWorkspaceService,
+	toggleFavoriteService,
+} from "../services/workspaces.service";
 
 export const useWorkspaceStore = defineStore("workspace", () => {
 	const workspaces = ref<Workspace[]>([]);
 	const currentWorkspaceId = ref<number | null>(null);
 
-	async function fetchWorkspaces() {
+	async function getWorkspaces() {
 		try {
-			workspaces.value = await getWorkspaces();
+			workspaces.value = await getWorkspacesService();
 		} catch (error) {
 			console.error("Failed to load workspaces:", error);
 		}
 	}
 
-	async function removeWorkspace(id: number) {
-		await deleteWorkspace(id);
-		await fetchWorkspaces();
+	async function deleteWorkspace(id: number) {
+		await deleteWorkspaceService(id);
+		await getWorkspaces();
 	}
 
 	async function createWorkspace(name: string, description: string) {
-		await addWorkspace(name, description);
-		await fetchWorkspaces();
+		await createWorkspaceService(name, description);
+		await getWorkspaces();
 	}
 
-	async function editWorkspace(id: number, name: string, description: string) {
-		await updateWorkspace(id, name, description);
-		await fetchWorkspaces();
+	async function updateWorkspace(id: number, name: string, description: string) {
+		await updateWorkspaceService(id, name, description);
+		await getWorkspaces();
 	}
 
-	async function toggleWorkspaceFavorite(id: number, isFavorite: boolean) {
-		await toggleFavorite(id, isFavorite);
-		await fetchWorkspaces();
+	async function toggleFavorite(id: number, isFavorite: boolean) {
+		await toggleFavoriteService(id, isFavorite);
+		await getWorkspaces();
 	}
 
 	function selectWorkspace(id: number) {
@@ -48,11 +48,11 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 	return {
 		workspaces,
 		currentWorkspaceId,
-		fetchWorkspaces,
-		removeWorkspace,
+		getWorkspaces,
+		deleteWorkspace,
 		createWorkspace,
-		editWorkspace,
-		toggleWorkspaceFavorite,
+		updateWorkspace,
+		toggleFavorite,
 		selectWorkspace,
 	};
 });

@@ -17,7 +17,7 @@ const activeWorkspace = computed(() => workspaces.value.find(w => w.id === store
 
 async function fetchWorkspaces() {
   try {
-    await store.fetchWorkspaces();
+    await store.getWorkspaces();
 
     if (activeWorkspace.value && !workspaces.value.find(w => w.id === activeWorkspace.value?.id)) {
       store.selectWorkspace(activeWorkspace.value.id);
@@ -28,7 +28,7 @@ async function fetchWorkspaces() {
 }
 
 async function handleWorkspaceUpdate(id: number, payload: { name: string, description: string }) {
-  await store.editWorkspace(id, payload.name, payload.description);
+  await store.updateWorkspace(id, payload.name, payload.description);
 
   await fetchWorkspaces();
 

@@ -48,10 +48,9 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue';
-import type { Workspace } from '../services/workspaces';
+import type { Workspace } from '../services/workspaces.service.ts';
 import type { TabsItem } from '@nuxt/ui';
 import Shortcuts from "./Shortcuts/index.vue";
-import ShortcutFormModal from './Shortcuts/ShortcutFormModal.vue';
 
 const tabItems = [
   {

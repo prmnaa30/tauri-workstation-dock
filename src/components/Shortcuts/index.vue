@@ -85,8 +85,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import type { Workspace } from '../../services/workspaces';
-import { Shortcut } from '../../services/shortcuts';
+import type { Workspace } from '../../services/workspaces.service';
+import { Shortcut } from '../../services/shortcuts.service';
 import { invoke } from '@tauri-apps/api/core';
 import { useShortcutStore } from '../../stores/shortcuts';
 import { storeToRefs } from 'pinia';
@@ -144,7 +144,7 @@ const filteredAndSortedShortcuts = computed(() => {
 
 watch(() => props.workspace, async (newWs) => {
   if (newWs) {
-    await store.fetchShortcuts(newWs.id);
+    await store.getShortcuts(newWs.id);
   } else {
     shortcuts.value = [];
   }
@@ -152,7 +152,7 @@ watch(() => props.workspace, async (newWs) => {
 
 async function handleConfirmDelete() {
   if (shortcutToDelete.value) {
-    await store.removeShortcut(shortcutToDelete.value.id);
+    await store.deleteShortcut(shortcutToDelete.value.id);
     shortcutToDelete.value = null;
   }
 }

@@ -142,7 +142,7 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue';
-import type { Workspace } from '../services/workspaces';
+import type { Workspace } from '../services/workspaces.service';
 import { useWorkspaceStore } from '../stores/workspaces';
 import DeleteModal from './DeleteModal.vue';
 
@@ -192,7 +192,7 @@ async function submitCreate() {
 
 async function toggleFavorite(ws: Workspace) {
   const newStatus = ws.is_favorite === 1 ? false : true;
-  await store.toggleWorkspaceFavorite(ws.id, newStatus);
+  await store.toggleFavorite(ws.id, newStatus);
 }
 
 function triggerDeleteModal(ws: Workspace) {
@@ -202,7 +202,7 @@ function triggerDeleteModal(ws: Workspace) {
 
 async function handleConfirmDelete() {
   if (workspaceToDelete.value) {
-    await store.removeWorkspace(workspaceToDelete.value.id);
+    await store.deleteWorkspace(workspaceToDelete.value.id);
     workspaceToDelete.value = null;
   }
 }

@@ -57,11 +57,11 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { Workspace } from '../../services/workspaces';
+import { Workspace } from '../../services/workspaces.service';
 import { open } from '@tauri-apps/plugin-dialog';
 import { SelectMenuItem } from '@nuxt/ui';
 import { useShortcutStore } from '../../stores/shortcuts';
-import type { Shortcut } from '../../services/shortcuts';
+import type { Shortcut } from '../../services/shortcuts.service';
 
 const store = useShortcutStore();
 

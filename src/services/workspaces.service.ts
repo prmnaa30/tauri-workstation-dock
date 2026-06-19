@@ -8,12 +8,12 @@ export interface Workspace {
   is_favorite: number;
 }
 
-export async function getWorkspaces(): Promise<Workspace[]> {
+export async function getWorkspacesService(): Promise<Workspace[]> {
   const db = await dbPromise;
   return await db.select("SELECT * FROM workspaces ORDER BY id DESC");
 }
 
-export async function addWorkspace(name: string, description: string): Promise<void> {
+export async function createWorkspaceService(name: string, description: string): Promise<void> {
   const db = await dbPromise;
   await db.execute(
     "INSERT INTO workspaces (name, description) VALUES ($1, $2)",
@@ -21,7 +21,7 @@ export async function addWorkspace(name: string, description: string): Promise<v
   );
 }
 
-export async function updateWorkspace(id: number, name: string, description: string): Promise<void> {
+export async function updateWorkspaceService(id: number, name: string, description: string): Promise<void> {
   const db = await dbPromise;
   await db.execute(
     "UPDATE workspaces SET name = $1, description = $2 WHERE id = $3",
@@ -29,12 +29,12 @@ export async function updateWorkspace(id: number, name: string, description: str
   )
 }
 
-export async function deleteWorkspace(id: number): Promise<void> {
+export async function deleteWorkspaceService(id: number): Promise<void> {
   const db = await dbPromise;
   await db.execute("DELETE FROM workspaces WHERE id = $1", [id]);
 }
 
-export async function toggleFavorite(id: number, isFavorite: boolean) {
+export async function toggleFavoriteService(id: number, isFavorite: boolean) {
   const db = await dbPromise;
   await db.execute(
     "UPDATE workspaces SET is_favorite = $1 WHERE id = $2",
