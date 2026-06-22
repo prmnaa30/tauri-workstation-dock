@@ -15,7 +15,7 @@
 
     <div ref="listContainerRef" class="flex-1 overflow-y-auto custom-scrollbar p-2">
       <div v-if="filteredItems.length === 0" class="h-full flex items-center justify-center p-8 text-slate-500 text-sm">
-        No results found for "{{ searchQuery }}"
+        {{ searchQuery ? `No results found for "${searchQuery}` : "Nothing available to run." }}
       </div>
 
       <div v-else class="flex flex-col gap-1">
