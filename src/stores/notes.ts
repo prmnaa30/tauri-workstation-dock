@@ -7,6 +7,7 @@ import {
 	searchAllNotesService,
 	SearchNote,
 	updateNoteService,
+	updateNoteTimestampService,
 	type Note,
 } from "../services/notes.service";
 import { invoke } from "@tauri-apps/api/core";
@@ -101,6 +102,15 @@ export const useNoteStore = defineStore("notes", () => {
 		}
 	}
 
+	async function touchNote(workspaceId: number, noteId: number) {
+		try {
+			await updateNoteTimestampService(noteId);
+			await getNotes(workspaceId);
+		} catch (error) {
+			console.error("Failed to update note timestamp:", error);
+		}
+	}
+
 	async function deleteNote(
 		workspaceId: number,
 		noteId: number,
@@ -115,7 +125,7 @@ export const useNoteStore = defineStore("notes", () => {
 
 			await getNotes(workspaceId);
 		} catch (error) {
-			console.error("Gagal menghapus catatan:", error);
+			console.error("Failed to delete note:", error);
 		}
 	}
 
@@ -127,6 +137,7 @@ export const useNoteStore = defineStore("notes", () => {
 		getNotes,
 		createNote,
 		updateNote,
+		touchNote,
 		deleteNote,
 		sanitizeFilename,
 	};

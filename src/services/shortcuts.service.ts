@@ -54,7 +54,7 @@ export async function updateShortcutService(
 ): Promise<void> {
 	const db = await dbPromise;
 	await db.execute(
-		"UPDATE shortcuts SET title = $1, type = $2, path = $3, browser_path = $4 WHERE id = $5",
+		"UPDATE shortcuts SET title = $1, type = $2, path = $3, browser_path = $4, updated_at = CURRENT_TIMESTAMP WHERE id = $5",
 		[title, type, path, browserPath, shortcutId],
 	);
 }

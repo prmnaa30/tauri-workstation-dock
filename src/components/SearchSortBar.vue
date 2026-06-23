@@ -20,6 +20,9 @@
         placeholder="Search..."
         class="w-full"
         @blur="closeSearchIfEmpty"
+        :ui="{
+          base: 'ring-slate-700 focus-visible:ring-1 focus-visible:ring-slate-500 transition-all duration-200'
+        }"
       >
         <template #trailing>
           <UButton

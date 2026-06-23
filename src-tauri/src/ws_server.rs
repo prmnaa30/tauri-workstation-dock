@@ -20,7 +20,7 @@ pub fn spawn_server(tx_server: broadcast::Sender<String>) {
 
             tokio::spawn(async move {
                 if let Ok(mut ws_stream) = accept_async(stream).await {
-                    println!("Ekstensi Browser Terhubung!");
+                    println!("Browser Extension Connected!");
                     let mut rx_channel = tx_client.subscribe();
 
                     loop {
@@ -38,7 +38,7 @@ pub fn spawn_server(tx_server: broadcast::Sender<String>) {
                             }
                         }
                     }
-                    println!("Ekstensi Browser Terputus.");
+                    println!("Browser Extension Disconnected.");
                 }
             });
         }

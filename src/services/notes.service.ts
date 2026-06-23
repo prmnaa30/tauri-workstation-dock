@@ -18,7 +18,7 @@ export async function searchAllNotesService(): Promise<SearchNote[]> {
 		FROM notes n 
 		JOIN workspaces w ON n.workspace_id = w.id 
 		ORDER BY n.title ASC
-	`)
+	`);
 }
 
 export async function getNotesService(workspaceId: number): Promise<Note[]> {
@@ -41,13 +41,24 @@ export async function createNoteService(
 	);
 }
 
-export async function updateNoteService(noteId: number, title: string, filename: string) {
+export async function updateNoteService(
+	noteId: number,
+	title: string,
+	filename: string,
+) {
 	const db = await dbPromise;
-	await db.execute("UPDATE notes SET title = $1, filename = $2 WHERE id = $3", [
-		title,
-		filename,
-		noteId,
-	]);
+	await db.execute(
+		"UPDATE notes SET title = $1, filename = $2, updated_at = updated_at = CURRENT_TIMESTAMP WHERE id = $3",
+		[title, filename, noteId],
+	);
+}
+
+export async function updateNoteTimestampService(noteId: number) {
+	const db = await dbPromise;
+	await db.execute(
+		"UPDATE notes SET updated_at = CURRENT_TIMESTAMP WHERE id = $1",
+		[noteId],
+	);
 }
 
 export async function deleteNoteService(noteId: number) {

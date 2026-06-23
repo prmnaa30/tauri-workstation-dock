@@ -4,7 +4,7 @@ mod ws_server;
 
 use std::fs;
 use tauri::menu::{Menu, MenuItem};
-use tauri::tray::TrayIconBuilder;
+use tauri::tray::{TrayIconBuilder, TrayIconEvent, MouseButton, MouseButtonState};
 use tauri::{Listener, Manager};
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 use tauri_plugin_sql::{Migration, MigrationKind};
@@ -62,6 +62,7 @@ pub fn run() {
                                 let _ = float_win.hide();
                             }
                             if let Some(main_win) = app.get_webview_window("main") {
+                                let _ = main_win.unminimize();
                                 let _ = main_win.show();
                                 let _ = main_win.set_focus();
                             }
@@ -80,10 +81,28 @@ pub fn run() {
 
             TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone())
+                .tooltip("Nook")
                 .menu(&menu)
+                .show_menu_on_left_click(false)
+                .on_tray_icon_event(|tray, event| {
+                    if let TrayIconEvent::Click {
+                        button: MouseButton::Left,
+                        button_state: MouseButtonState::Up,
+                        ..
+                    } = event
+                    {
+                        let app = tray.app_handle();
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.unminimize();
+                            let _ = window.show();
+                            let _ = window.set_focus();
+                        }
+                    }
+                })
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "show" => {
                         if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.unminimize();
                             window.show().unwrap();
                             window.set_focus().unwrap();
                         }
@@ -97,6 +116,7 @@ pub fn run() {
 
             if let Some(main_window) = app.get_webview_window("main") {
                 app.listen_any("open-note", move |_event| {
+                    let _ = main_window.unminimize();
                     let _ = main_window.show();
                     let _ = main_window.set_focus();
                 });
@@ -113,7 +133,7 @@ pub fn run() {
             {
                 let alt_w = Shortcut::new(Some(Modifiers::ALT), Code::KeyW);
                 if let Err(e) = app.global_shortcut().register(alt_w) {
-                    eprintln!("Gagal mendaftarkan shortcut Alt+W: {}", e);
+                    eprintln!("Failed to register shortcut Alt+W: {}", e);
                 }
             }
 
