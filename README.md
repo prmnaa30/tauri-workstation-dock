@@ -25,7 +25,6 @@ The application runs in the background (*daemon*) via the *System Tray* and can 
      - **Web URL**: Open web links.
      - **Local Directory/Folder**: Open local folders or file explorers.
      - **Application/File**: Execute specific files or applications.
-   - **Custom Browser**: Configure web shortcuts to open in a specific browser (e.g., work links in Brave, entertainment links in Edge).
 
 3. **Markdown Notes Integration**
    - Each workspace comes with built-in Markdown notes (*GitHub Flavored Markdown*).
@@ -93,7 +92,6 @@ Aplikasi ini berjalan di latar belakang (*daemon*) melalui *System Tray* dan dap
      - **Web URL**: Membuka tautan web.
      - **Direktori/Folder Lokal**: Membuka berkas atau explorer lokal.
      - **Aplikasi/File**: Mengeksekusi berkas atau aplikasi tertentu.
-   - **Custom Browser**: Konfigurasi pintasan web agar terbuka pada peramban tertentu secara spesifik (misalnya link kerja di Brave, link hiburan di Edge).
 
 3. **Markdown Notes Integration**
    - Setiap *workspace* dilengkapi dengan catatan berbasis Markdown (*GitHub Flavored Markdown*).
