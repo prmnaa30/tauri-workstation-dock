@@ -72,6 +72,12 @@
 html, body {
   overscroll-behavior: none;
   background-color: transparent !important;
+  user-select: none; /* Disable selection globally */
+}
+
+/* Allow selection inside the editor and input/textarea fields */
+.tiptap, input, textarea, [contenteditable="true"] {
+  user-select: text !important;
 }
 
 .custom-scrollbar {

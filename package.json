@@ -17,6 +17,7 @@
     "@tauri-apps/plugin-global-shortcut": "^2.3.2",
     "@tauri-apps/plugin-opener": "^2",
     "@tauri-apps/plugin-sql": "^2.4.0",
+    "@tiptap/extension-text-align": "^3.27.1",
     "@tiptap/y-tiptap": "^3.0.5",
     "marked": "^18.0.5",
     "pinia": "^3.0.4",

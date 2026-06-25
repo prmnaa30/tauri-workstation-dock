@@ -84,4 +84,15 @@ export default defineConfig(async () => ({
       ignored: ["**/src-tauri/**"],
     },
   },
+  optimizeDeps: {
+    include: [
+      '@tiptap/core',
+      '@tiptap/vue-3',
+      'prosemirror-state',
+      'prosemirror-transform',
+      'prosemirror-model',
+      'prosemirror-view',
+      'prosemirror-gapcursor'
+    ]
+  },
 }));
