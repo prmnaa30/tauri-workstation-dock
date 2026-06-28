@@ -131,6 +131,20 @@ pub async fn execute_shortcut(
 }
 
 #[tauri::command]
+pub async fn open_main_window(app: tauri::AppHandle) -> Result<(), String> {
+    use tauri::Manager;
+    if let Some(float_win) = app.get_webview_window("floating") {
+        let _ = float_win.hide();
+    }
+    if let Some(main_win) = app.get_webview_window("main") {
+        let _ = main_win.unminimize();
+        let _ = main_win.show();
+        let _ = main_win.set_focus();
+    }
+    Ok(())
+}
+
+#[tauri::command]
 pub fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }

@@ -46,7 +46,6 @@ pub fn run() {
                 .with_handler(|app, shortcut, event| {
                     if event.state() == ShortcutState::Pressed {
                         let alt_w = Shortcut::new(Some(Modifiers::ALT), Code::KeyW);
-                        let ctrl_w = Shortcut::new(Some(Modifiers::CONTROL), Code::KeyW);
                         if shortcut == &alt_w {
                             if let Some(window) = app.get_webview_window("floating") {
                                 if window.is_visible().unwrap_or(false) {
@@ -56,15 +55,6 @@ pub fn run() {
                                     window.set_focus().unwrap();
                                     window.center().unwrap();
                                 }
-                            }
-                        } else if shortcut == &ctrl_w {
-                            if let Some(float_win) = app.get_webview_window("floating") {
-                                let _ = float_win.hide();
-                            }
-                            if let Some(main_win) = app.get_webview_window("main") {
-                                let _ = main_win.unminimize();
-                                let _ = main_win.show();
-                                let _ = main_win.set_focus();
                             }
                         }
                     }
@@ -146,35 +136,17 @@ pub fn run() {
                     api.prevent_close();
                 }
                 tauri::WindowEvent::Focused(focused) => {
-                    if window.label() == "floating" {
-                        #[cfg(desktop)]
-                        {
-                            use tauri_plugin_global_shortcut::{
-                                Code, GlobalShortcutExt, Modifiers, Shortcut,
-                            };
-                            let app = window.app_handle();
-                            let ctrl_w = Shortcut::new(Some(Modifiers::CONTROL), Code::KeyW);
-                            if *focused {
-                                let _ = app.global_shortcut().register(ctrl_w);
-                            } else {
-                                let _ = window.hide();
-                                let _ = app.global_shortcut().unregister(ctrl_w);
-                            }
-                        }
+                    if window.label() == "floating" && !focused {
+                        let _ = window.hide();
                     }
                 }
                 _ => {}
             }
         })
-        .on_window_event(|window, event| {
-            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                window.hide().unwrap();
-                api.prevent_close();
-            }
-        })
         .invoke_handler(tauri::generate_handler![
             commands::greet,
             commands::execute_shortcut,
+            commands::open_main_window,
             notes::read_note,
             notes::write_note,
             notes::rename_note_file,

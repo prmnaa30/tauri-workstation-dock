@@ -117,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch, nextTick } from "vue";
+import { ref, onMounted, onUnmounted, computed, watch, nextTick } from "vue";
 import { useShortcutStore } from "../stores/shortcuts";
 import { useNoteStore } from "../stores/notes";
 import { storeToRefs } from "pinia";
@@ -249,4 +249,23 @@ async function closeWindow() {
 		console.error("Failed to hide command bar:", error);
 	}
 }
+
+const handleGlobalKeyDown = async (event: KeyboardEvent) => {
+	if ((event.ctrlKey || event.metaKey) && (event.key === "w" || event.key === "W")) {
+		event.preventDefault();
+		try {
+			await invoke("open_main_window");
+		} catch (e) {
+			console.error("Failed to invoke open_main_window:", e);
+		}
+	}
+};
+
+onMounted(() => {
+	window.addEventListener("keydown", handleGlobalKeyDown);
+});
+
+onUnmounted(() => {
+	window.removeEventListener("keydown", handleGlobalKeyDown);
+});
 </script>
