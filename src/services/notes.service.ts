@@ -48,7 +48,7 @@ export async function updateNoteService(
 ) {
 	const db = await dbPromise;
 	await db.execute(
-		"UPDATE notes SET title = $1, filename = $2, updated_at = updated_at = CURRENT_TIMESTAMP WHERE id = $3",
+		"UPDATE notes SET title = $1, filename = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3",
 		[title, filename, noteId],
 	);
 }
