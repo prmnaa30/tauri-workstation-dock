@@ -9,8 +9,10 @@ import {
 	type SearchShortcut,
 } from "../services/shortcuts.service";
 import { ref } from "vue";
+import { useWorkspaceStore } from "./workspaces";
 
 export const useShortcutStore = defineStore("shortcut", () => {
+	const workspaceStore = useWorkspaceStore();
 	const shortcuts = ref<Shortcut[]>([]);
 	const allShortcuts = ref<SearchShortcut[]>([]);
 	const currentWorkspaceId = ref<number | null>(null);
@@ -36,6 +38,7 @@ export const useShortcutStore = defineStore("shortcut", () => {
 		if (currentWorkspaceId.value === workspaceId) {
 			await getShortcuts(workspaceId);
 		}
+		await workspaceStore.getWorkspaces();
 	}
 
 	async function updateShortcut(
@@ -51,6 +54,7 @@ export const useShortcutStore = defineStore("shortcut", () => {
 		if (currentWorkspaceId.value === workspaceId) {
 			await getShortcuts(workspaceId);
 		}
+		await workspaceStore.getWorkspaces();
 	}
 
 	async function deleteShortcut(id: number) {
@@ -59,6 +63,7 @@ export const useShortcutStore = defineStore("shortcut", () => {
 		if (currentWorkspaceId.value !== null) {
 			await getShortcuts(currentWorkspaceId.value);
 		}
+		await workspaceStore.getWorkspaces();
 	}
 
 	return {

@@ -11,8 +11,10 @@ import {
 	type Note,
 } from "../services/notes.service";
 import { invoke } from "@tauri-apps/api/core";
+import { useWorkspaceStore } from "./workspaces";
 
 export const useNoteStore = defineStore("notes", () => {
+	const workspaceStore = useWorkspaceStore();
 	const notes = ref<Note[]>([]);
 	const allNotes = ref<SearchNote[]>([]);
 	const activeNote = ref<Note | null>(null);
@@ -55,6 +57,7 @@ export const useNoteStore = defineStore("notes", () => {
 			});
 
 			await getNotes(workspaceId);
+			await workspaceStore.getWorkspaces();
 
 			const newNote = notes.value.find((note) => note.filename === filename);
 			if (newNote) {
@@ -92,6 +95,7 @@ export const useNoteStore = defineStore("notes", () => {
 			await updateNoteService(noteId, cleanTitle, newFilename);
 
 			await getNotes(workspaceId);
+			await workspaceStore.getWorkspaces();
 
 			if (activeNote.value && activeNote.value.id === noteId) {
 				activeNote.value.title = cleanTitle;
@@ -106,6 +110,7 @@ export const useNoteStore = defineStore("notes", () => {
 		try {
 			await updateNoteTimestampService(noteId);
 			await getNotes(workspaceId);
+			await workspaceStore.getWorkspaces();
 		} catch (error) {
 			console.error("Failed to update note timestamp:", error);
 		}
@@ -124,6 +129,7 @@ export const useNoteStore = defineStore("notes", () => {
 			});
 
 			await getNotes(workspaceId);
+			await workspaceStore.getWorkspaces();
 		} catch (error) {
 			console.error("Failed to delete note:", error);
 		}
