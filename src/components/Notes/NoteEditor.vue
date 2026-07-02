@@ -2,7 +2,6 @@
 	<div
 		v-if="activeNote"
 		class="flex-1 flex flex-col bg-slate-900/40 border border-slate-700/50 rounded-xl overflow-hidden shadow-lg backdrop-blur-md h-full min-h-[500px]"
-		@contextmenu.prevent
 	>
 		<!-- Canvas Editor -->
 		<div class="flex-1 overflow-y-auto overscroll-contain custom-scrollbar">
@@ -11,7 +10,6 @@
 				v-slot="{ editor, handlers }"
 				contentType="markdown"
 				@update:modelValue="debouncedSave"
-				@contextmenu.prevent
 				:ui="{ base: 'pl-12 pr-8 pt-10 sm:pl-16 sm:pr-12' }"
 				:extensions="editorExtensions"
 				:handlers="customHandlers"

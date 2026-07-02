@@ -113,3 +113,34 @@ html, body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: rgba(155, 155, 155, 0.7);
 }
+
+/* Disable hover and pointer events on workspace cards when a menu is open */
+body.menu-is-open .workspace-card {
+  pointer-events: none !important;
+}
+
+/* Reset stuck hover backgrounds and text colors for inactive sidebar cards when a menu is open */
+body.menu-is-open .workspace-card:not(.is-active):not(.menu-active):not(.note-card):not(.shortcut-card) {
+  background-color: transparent !important;
+  color: var(--color-neutral-600) !important;
+}
+
+.dark body.menu-is-open .workspace-card:not(.is-active):not(.menu-active):not(.note-card):not(.shortcut-card) {
+  color: var(--color-neutral-400) !important;
+}
+
+/* Keep the card with the active menu highlighted as if hovered */
+body.menu-is-open .workspace-card.menu-active:not(.is-active) {
+  background-color: rgba(229, 229, 229, 0.4) !important;
+  color: var(--color-neutral-900) !important;
+}
+
+.dark body.menu-is-open .workspace-card.menu-active:not(.is-active) {
+  background-color: rgba(38, 38, 38, 0.4) !important;
+  color: var(--color-neutral-200) !important;
+}
+
+/* Keep the ellipsis button visible on the card with the active menu */
+body.menu-is-open .workspace-card.menu-active .opacity-0 {
+  opacity: 1 !important;
+}

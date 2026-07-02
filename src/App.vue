@@ -3,14 +3,10 @@
 		<div
 			v-if="windowLabel === 'floating'"
 			class="w-full h-full"
-			@contextmenu.prevent
 		>
 			<FloatingCommandBar />
 		</div>
-		<Sidebar
-			v-else
-			@contextmenu.prevent
-		>
+		<Sidebar v-else>
 			<WorkspaceDetails
 				:workspace="activeWorkspace"
 				@update:workspace="handleWorkspaceUpdate"
@@ -21,7 +17,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from "vue";
-import Sidebar from "./components/Sidebar.vue";
 import WorkspaceDetails from "./components/WorkspaceDetails.vue";
 import { useWorkspaceStore } from "./stores/workspaces.ts";
 import { useNoteStore } from "./stores/notes.ts";
@@ -64,8 +59,18 @@ async function handleWorkspaceUpdate(id: number, payload: { name: string; descri
 }
 
 const handleKeyDown = (event: KeyboardEvent) => {
-	if (event.key === "Escape" && store.currentWorkspaceId !== null) {
-		store.selectWorkspace(null);
+	if (event.key === "Escape") {
+		// If any modal, dialog, or menu is active, let it handle the Escape key first
+		const hasActiveModal = document.querySelector(
+			'[role="dialog"], [role="alertdialog"], [role="menu"], [data-radix-popper-content-wrapper]'
+		);
+		if (hasActiveModal) {
+			return;
+		}
+
+		if (store.currentWorkspaceId !== null) {
+			store.selectWorkspace(null);
+		}
 	}
 
 	if ((event.ctrlKey || event.metaKey) && (event.key === "a" || event.key === "A")) {
@@ -79,8 +84,13 @@ const handleKeyDown = (event: KeyboardEvent) => {
 	}
 };
 
+const handleContextMenu = (event: MouseEvent) => {
+	event.preventDefault();
+};
+
 onMounted(async () => {
 	window.addEventListener("keydown", handleKeyDown);
+	window.addEventListener("contextmenu", handleContextMenu);
 	try {
 		const currentWindow = getCurrentWindow();
 		windowLabel.value = currentWindow.label;
@@ -107,5 +117,6 @@ onMounted(async () => {
 
 onUnmounted(() => {
 	window.removeEventListener("keydown", handleKeyDown);
+	window.removeEventListener("contextmenu", handleContextMenu);
 });
 </script>
